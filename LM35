@@ -1,0 +1,26 @@
+const int lm35Pin = 34;  // Pin analógico donde está conectado el LM35
+const int ledPin = 4;    // Pin del LED
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  int lectura = analogRead(lm35Pin);  // Leer el valor analógico
+  float voltaje = lectura * (3.3 / 4095.0);  // Convertir a voltaje (ESP32 usa 12 bits: 4095)
+  float temperatura = voltaje * 100.0;  // Convertir a °C (10mV = 1°C)
+
+  //Serial.print("Temperatura: ");
+  Serial.println(temperatura);
+  //Serial.println(" °C");
+
+  if (temperatura >= 30.0) {
+    digitalWrite(ledPin, HIGH);  // Encender LED
+  } else {
+    digitalWrite(ledPin, LOW);   // Apagar LED
+  }
+
+  delay(2000);  
+}
+}
