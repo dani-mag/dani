@@ -1,0 +1,53 @@
+#include <DHT.h>
+
+// Definir el tipo de sensor y el pin al que está conectado
+#define DHTPIN 14        // Pin del sensor DHT11
+#define DHTTYPE DHT11    // Tipo de sensor (DHT11)
+#define LEDPIN 5         // Pin donde está conectado el LED
+
+// Crear el objeto de la librería DHT
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastReadTime = 0; // Variable para el tiempo de la última lectura
+const unsigned long intervaloLectura = 2000; // Intervalo de lectura en ms
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+  pinMode(LEDPIN, OUTPUT); // Configurar el LED como salida
+  digitalWrite(LEDPIN, LOW); // Apagar el LED al inicio
+  Serial.println("Leyendo datos del sensor DHT11...");
+}
+
+void loop() {
+  if (millis() - lastReadTime >= intervaloLectura) {
+    lastReadTime = millis(); // Actualizar el tiempo de la última lectura
+
+    // Leer humedad y temperatura
+    float humedad = dht.readHumidity();
+    float temperatura = dht.readTemperature();
+
+    // Verificar si la lectura falló
+    if (isnan(humedad) || isnan(temperatura)) {
+      Serial.println("Error al leer del sensor DHT11, reintentando...");
+      return;
+    }
+
+    // Mostrar datos en monitor serial
+//    Serial.print("Humedad: ");
+    Serial.print(humedad);
+    Serial.print("\t");
+//    Serial.print("Temperatura: ");
+    Serial.println(temperatura);
+//    Serial.println(" °C");
+
+    // Encender el LED si la temperatura es mayor o igual a 30°C
+    if (temperatura >= 30) {
+      digitalWrite(LEDPIN, HIGH);
+//      Serial.println("🔥 Temperatura alta, LED encendido!");
+    } else {
+      digitalWrite(LEDPIN, LOW);
+//      Serial.println("✅ Temperatura normal, LED apagado.");
+    }
+  }
+}
